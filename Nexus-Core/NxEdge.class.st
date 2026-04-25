@@ -1,0 +1,111 @@
+"
+I am a traversable connection between two nodes in the Nexus spatial graph.
+
+I support three direction modes (#both, #forward, #backward), a distance value,
+a risk factor for random hazards, and an optional list of scripted encounters.
+I know how to tell whether I connect to a given node and to return the node at my other end.
+"
+Class {
+	#name : 'NxEdge',
+	#superclass : 'Object',
+	#instVars : [
+		'node1',
+		'node2',
+		'distance',
+		'risk',
+		'encounters',
+		'direction'
+	],
+	#category : 'Nexus-Core',
+	#package : 'Nexus-Core'
+}
+
+{ #category : 'testing' }
+NxEdge >> connectsNode: aNodeName [
+	"Does this edge connect to aNodeName?"
+
+	^ node1 = aNodeName or: [ node2 = aNodeName ]
+]
+
+{ #category : 'accessing' }
+NxEdge >> direction [
+
+	^ direction ifNil: [ #both ]
+]
+
+{ #category : 'accessing' }
+NxEdge >> direction: aSymbol [
+
+	(#(both forward backward) includes: aSymbol)
+        ifFalse: [ self error: 'direction must be #both, #forward, or #backward' ].
+    direction := aSymbol
+]
+
+{ #category : 'accessing' }
+NxEdge >> distance [
+
+	^ distance
+]
+
+{ #category : 'accessing' }
+NxEdge >> distance: aNumber [
+
+	distance := aNumber
+]
+
+{ #category : 'accessing' }
+NxEdge >> encounters [
+
+	^ encounters ifNotNil: [ #() ]
+]
+
+{ #category : 'accessing' }
+NxEdge >> encounters: aCollection [
+
+	encounters := aCollection
+]
+
+{ #category : 'accessing' }
+NxEdge >> node1 [
+
+	^ node1
+]
+
+{ #category : 'accessing' }
+NxEdge >> node1: aString [
+
+	node1 := aString
+]
+
+{ #category : 'accessing' }
+NxEdge >> node2 [
+
+	^ node2
+]
+
+{ #category : 'accessing' }
+NxEdge >> node2: aString [
+
+	node2 := aString
+]
+
+{ #category : 'testing' }
+NxEdge >> otherEndOf: aNodeName [
+	"Return the node at the other end, assuming undirected.  
+ For directed queries, use the traversal methods in NxGraph."
+
+	node1 = aNodeName ifTrue: [ ^ node2 ].
+	^ node1
+]
+
+{ #category : 'accessing' }
+NxEdge >> risk [
+
+	^ risk ifNil: [ 0.0 ]
+]
+
+{ #category : 'accessing' }
+NxEdge >> risk: aNumber [
+
+	risk := aNumber
+]
