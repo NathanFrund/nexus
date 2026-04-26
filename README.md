@@ -15,12 +15,15 @@ that puts presence, witnessing, and path hazards front and center.
 
 ## Features
 
-- Graph-based spatial model with **bidirectional and one‑way** edges
-- Presence queries: "Who is at this location?"
-- Witness‑event generation for social diffusion
+- Graph‑based spatial model with **bidirectional and one‑way** edges
+- Presence queries: “Who is at this location?”
+- Witness‑event generation for social diffusion (always emits an event, even when nobody else is present)
 - Movement with direction checks and random path hazards
-- JSON map loading via built‑in `STONJSON` (zero external dependencies)
-- Clean, testable Smalltalk core -- no ABM framework required.
+- Event accumulation (`pendingEvents`) for every move – includes departure witnesses and travel hazards
+- Stable agent identifiers (`id`) for reliable identity tracking
+- Hypergraph world loading from JSON – multiple named graphs are flattened into a single navigable space
+- Map‑based edge representation for clarity and extensibility
+- Clean, testable Smalltalk core – no ABM framework required
 
 ## Installation
 
@@ -41,10 +44,10 @@ Metacello new
 
 ```smalltalk
 | graph world agents elder thug |
-graph := NxGraph fromJSONFile: 'village.json' asFileReference.
+graph := NxGraph loadWorldFromJSONFile: 'village.json' asFileReference.
 
-elder := NxSimpleAgent new name: 'Elder'; location: 'elderHut'; yourself.
-thug  := NxSimpleAgent new name: 'Thug';  location: 'village'; yourself.
+elder := NxSimpleAgent new id: #elder; name: 'Elder'; location: 'elderHut'; yourself.
+thug  := NxSimpleAgent new id: #thug; name: 'Thug';  location: 'village'; yourself.
 agents := Dictionary new
     at: 'elder' put: elder;
     at: 'thug'  put: thug;
@@ -52,45 +55,68 @@ agents := Dictionary new
 world := NxWorld new graph: graph; agents: agents.
 
 "Who is at the village?"
-(world agentsAtNode: 'village') collect: #name.   "#('Thug')"
+(world agentsAtNode: 'village') collect: #name.   "→ #('Thug')"
+
+"Move Thug to the Elder's Hut"
+world moveAgent: thug toNode: 'elderHut'.
+thug location.
 ```
 
 ## village.json
 
 ```json
 {
-  "nodes": {
+  "graphs": {
     "village": {
-      "label": "Village Square",
-      "terrain": "open"
-    },
-    "elderHut": {
-      "label": "Elder's Hut",
-      "terrain": "building"
-    },
-    "forest": {
-      "label": "Forest Path",
-      "terrain": "woods"
+      "nodes": {
+        "village": {
+          "label": "Village Square",
+          "terrain": "open"
+        },
+        "elderHut": {
+          "label": "Elder's Hut",
+          "terrain": "building"
+        },
+        "forest": {
+          "label": "Forest Path",
+          "terrain": "woods"
+        }
+      },
+      "edges": [
+        {
+          "from": "village",
+          "to": "elderHut",
+          "distance": 1,
+          "risk": 0.0
+        },
+        {
+          "from": "village",
+          "to": "forest",
+          "distance": 2,
+          "risk": 0.3,
+          "direction": "backward"
+        }
+      ]
     }
-  },
-  "edges": [
-    [
-      "village",
-      "elderHut",
-      {
-        "distance": 1,
-        "risk": 0.0
-      }
-    ],
-    [
-      "village",
-      "forest",
-      {
-        "distance": 2,
-        "risk": 0.3,
-        "direction": "backward"
-      }
-    ]
-  ]
+  }
 }
 ```
+
+A world can contain multiple named graphs—edges between nodes in different graphs are automatically merged into a single navigable space.
+
+## Package Structure
+
+| Package       | Contents                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `Nexus-Core`  | `NxGraph`, `NxNode`, `NxEdge`, `NxWorld`, `NxWitnessedEvent`, `NxHazardEvent`, `NxSimpleAgent` |
+| `Nexus-Tests` | `NxGraphTest`, `NxWorldTest`                                                                   |
+
+## Design
+
+Nexus is intentionally decoupled from any specific agent‑based model. It doesn’t know
+about personality traits, conversion rules, or game mechanics. It just produces spatial
+events (witnessing, path hazards) that any simulation engine can consume.
+
+## License
+
+MIT
