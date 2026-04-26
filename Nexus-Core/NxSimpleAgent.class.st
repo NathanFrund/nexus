@@ -7,12 +7,25 @@ Class {
 	#name : 'NxSimpleAgent',
 	#superclass : 'Object',
 	#instVars : [
+		'id',
 		'name',
 		'location'
 	],
 	#category : 'Nexus-Core',
 	#package : 'Nexus-Core'
 }
+
+{ #category : 'accessing' }
+NxSimpleAgent >> id [
+
+	^ id
+]
+
+{ #category : 'accessing' }
+NxSimpleAgent >> id: aSymbol [
+
+	id := aSymbol
+]
 
 { #category : 'accessing' }
 NxSimpleAgent >> location [
