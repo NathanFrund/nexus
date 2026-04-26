@@ -20,6 +20,13 @@ Class {
 	#package : 'Nexus-Core'
 }
 
+{ #category : 'as yet unclassified' }
+NxEdge >> allowsTraversalFrom: aNodeName [
+    ^ (self direction = #both) or: [
+        (self direction = #forward   and: [ self node1 = aNodeName ]) or:
+        [ self direction = #backward and: [ self node2 = aNodeName ] ] ]
+]
+
 { #category : 'movement' }
 NxEdge >> checkHazardTo: targetNodeName [
     (self risk > 0.0 and: [ self risk > 1.0 atRandom ]) ifTrue: [

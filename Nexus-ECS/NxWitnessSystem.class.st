@@ -1,0 +1,46 @@
+Class {
+	#name : 'NxWitnessSystem',
+	#superclass : 'Object',
+	#instVars : [
+		'announcer'
+	],
+	#category : 'Nexus-ECS',
+	#package : 'Nexus-ECS'
+}
+
+{ #category : 'as yet unclassified' }
+NxWitnessSystem >> departEntity: anEntity fromNode: aNodeName inWorld: aWorld [
+
+	| others events |
+	others := (aWorld entitiesAtNode: aNodeName) reject: [ :e |
+		          e id = anEntity id ].
+	events := others
+		          ifEmpty: [
+				          { (NxDepartureEvent new
+					           observer: nil;
+					           source: anEntity;
+					           location: aNodeName;
+					           yourself) } ]
+		          ifNotEmpty: [
+				          others collect: [ :observer |
+						          NxDepartureEvent new
+							          observer: observer;
+							          source: anEntity;
+							          location: aNodeName;
+							          yourself ] ].
+	events do: [ :event | announcer announce: event ].
+
+	"Also add to world's pendingEvents for backward compatibility during transition"
+	aWorld pendingEvents addAll: events
+]
+
+{ #category : 'initialization' }
+NxWitnessSystem >> initialize [
+    super initialize.
+    announcer := Announcer new.
+]
+
+{ #category : 'enumerating' }
+NxWitnessSystem >> whenDepartureHappensDo: aBlock [
+    announcer when: NxDepartureEvent do: aBlock for: self
+]

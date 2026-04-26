@@ -12,11 +12,17 @@ Class {
 	#instVars : [
 		'graph',
 		'agents',
+		'entities',
 		'pendingEvents'
 	],
 	#category : 'Nexus-Core',
 	#package : 'Nexus-Core'
 }
+
+{ #category : 'adding' }
+NxWorld >> addEntity: anEntity [
+    self entities at: anEntity id put: anEntity
+]
 
 { #category : 'accessing' }
 NxWorld >> agents [
@@ -33,6 +39,25 @@ NxWorld >> agents: aDictionary [
 { #category : 'spatial queries' }
 NxWorld >> agentsAtNode: aNodeName [
     ^ self agents values select: [ :agent | agent location = aNodeName ]
+]
+
+{ #category : 'accessing' }
+NxWorld >> entities [
+
+	^ entities ifNil: [ entities := Dictionary new ]
+]
+
+{ #category : 'accessing' }
+NxWorld >> entities: anEntity [
+
+	self entities at: anEntity id put: anEntity
+]
+
+{ #category : 'as yet unclassified' }
+NxWorld >> entitiesAtNode: aNodeName [
+    ^ self entities values select: [ :e |
+        (e hasComponent: NxPosition) and: [
+            (e componentOfType: NxPosition) nodeName = aNodeName ] ]
 ]
 
 { #category : 'accessing' }
