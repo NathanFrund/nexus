@@ -20,6 +20,14 @@ Class {
 	#package : 'Nexus-Core'
 }
 
+{ #category : 'movement' }
+NxEdge >> checkHazardTo: targetNodeName [
+    (self risk > 0.0 and: [ self risk > 1.0 atRandom ]) ifTrue: [
+        Transcript show: 'Hazard! ', targetNodeName; cr.
+        ^ NxHazardEvent new target: targetNodeName; risk: self risk; yourself ].
+    ^ nil
+]
+
 { #category : 'testing' }
 NxEdge >> connectsNode: aNodeName [
 	"Does this edge connect to aNodeName?"
