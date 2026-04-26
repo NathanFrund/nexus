@@ -20,7 +20,7 @@ Class {
 	#package : 'Nexus-Core'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'movement' }
 NxEdge >> checkHazardTo: targetNodeName [
     (self risk > 0.0 and: [ self risk > 1.0 atRandom ]) ifTrue: [
         Transcript show: 'Hazard! ', targetNodeName; cr.
