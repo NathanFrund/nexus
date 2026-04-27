@@ -60,6 +60,8 @@ NxMovementSystem >> moveEntity: anEntity toNode: targetNodeName inWorld: aWorld 
 	pos nodeName: targetNodeName.
 	self addToIndex: anEntity atNode: targetNodeName.
 	lastMoveTime := DateAndTime now.
+	
+	witnessSystem arriveEntity: anEntity atNode: targetNodeName inWorld: aWorld.
 
 	announcer announce: (NxEntityMoved new
 			 entity: anEntity;

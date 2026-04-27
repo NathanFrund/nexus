@@ -29,7 +29,8 @@ NxEdge >> allowsTraversalFrom: aNodeName [
 
 { #category : 'movement' }
 NxEdge >> checkHazardTo: targetNodeName [
-    (self risk > 0.0 and: [ self risk > 1.0 atRandom ]) ifTrue: [
+    self risk <= 0.0 ifTrue: [ ^ nil ].
+    (Random new next <= self risk) ifTrue: [
         Transcript show: 'Hazard! ', targetNodeName; cr.
         ^ NxHazardEvent new target: targetNodeName; risk: self risk; yourself ].
     ^ nil

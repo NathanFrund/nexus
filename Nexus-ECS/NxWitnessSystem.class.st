@@ -9,6 +9,28 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+NxWitnessSystem >> arriveEntity: anEntity atNode: aNodeName inWorld: aWorld [
+    | others events |
+    others := (aWorld entitiesAtNode: aNodeName) reject: [ :e | e id = anEntity id ].
+    events := others ifEmpty: [
+        { NxArrivalEvent new
+            observer: nil;
+            source: anEntity;
+            location: aNodeName;
+            yourself } ]
+        ifNotEmpty: [
+            others collect: [ :observer |
+                NxArrivalEvent new
+                    observer: observer;
+                    source: anEntity;
+                    location: aNodeName;
+                    yourself ] ].
+    events do: [ :event | announcer announce: event ].
+    aWorld pendingEvents addAll: events
+
+]
+
+{ #category : 'as yet unclassified' }
 NxWitnessSystem >> departEntity: anEntity fromNode: aNodeName inWorld: aWorld [
 
 	| others events |
@@ -38,6 +60,11 @@ NxWitnessSystem >> departEntity: anEntity fromNode: aNodeName inWorld: aWorld [
 NxWitnessSystem >> initialize [
     super initialize.
     announcer := Announcer new.
+]
+
+{ #category : 'enumerating' }
+NxWitnessSystem >> whenArrivalHappensDo: aBlock [
+    announcer when: NxArrivalEvent do: aBlock for: self
 ]
 
 { #category : 'enumerating' }
