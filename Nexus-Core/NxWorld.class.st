@@ -10,18 +10,23 @@ Class {
 	#name : 'NxWorld',
 	#superclass : 'Object',
 	#instVars : [
-		'graph',
 		'agents',
 		'entities',
-		'pendingEvents'
+		'graph',
+		'objects',
+		'objectLocation',
+		'pendingEvents',
+		'spatialIndex'
 	],
 	#category : 'Nexus-Core',
 	#package : 'Nexus-Core'
 }
 
 { #category : 'adding' }
-NxWorld >> addEntity: anEntity [
-    self entities at: anEntity id put: anEntity
+NxWorld >> addEntity: anObject [
+    "Add any object that responds to #id and has a resolvable location."
+    objects at: anObject id put: anObject.
+    self registerObjectLocation: anObject.
 ]
 
 { #category : 'accessing' }
@@ -74,8 +79,12 @@ NxWorld >> graph: anNxGraph [
 
 { #category : 'initialization' }
 NxWorld >> initialize [
-    super initialize.
-    pendingEvents := OrderedCollection new.
+
+	super initialize.
+	pendingEvents := OrderedCollection new.
+	objects := Dictionary new. "id -> object"
+	objectLocation := Dictionary new. "id -> nodeName"
+	spatialIndex := Dictionary new "nodeName -> Set of ids"
 ]
 
 { #category : 'movement' }
@@ -110,9 +119,67 @@ NxWorld >> moveAgent: anAgent toNode: targetNodeName [
     ^ true
 ]
 
+{ #category : 'spatial-index' }
+NxWorld >> objectsAtNode: aNodeName [
+    "Return a collection of actual objects at the given node (copy to avoid mutation)."
+    ^ (spatialIndex at: aNodeName ifAbsent: [ ^ #() ]) 
+        collect: [ :eachId | objects at: eachId ]
+]
+
 { #category : 'accessing' }
 NxWorld >> pendingEvents [
 	^ pendingEvents 
+]
+
+{ #category : 'as yet unclassified' }
+NxWorld >> registerObjectLocation: anObject [
+    "Determine initial location and add to spatial index."
+    | location |
+    location := self resolveLocationOf: anObject.
+    location ifNotNil: [ self updateObjectLocation: anObject from: nil to: location ].
+]
+
+{ #category : 'removing' }
+NxWorld >> removeEntity: anObject [
+    self removeObjectFromIndex: anObject.
+    objects removeKey: anObject id ifAbsent: [].
+]
+
+{ #category : 'spatial-index' }
+NxWorld >> removeObjectFromIndex: anObject [
+    "Remove object from spatial index and location map."
+    | nodeName |
+    nodeName := objectLocation removeKey: anObject id ifAbsent: [ nil ].
+    nodeName ifNotNil: [
+        (spatialIndex at: nodeName ifAbsent: [ ^ self ]) 
+            remove: anObject id ifAbsent: [].
+        (spatialIndex at: nodeName) ifEmpty: [ spatialIndex removeKey: nodeName ] ]
+]
+
+{ #category : 'as yet unclassified' }
+NxWorld >> resolveLocationOf: anObject [
+    "Duck‑typed location: try ECS component first, else simple location accessor."
+    (anObject respondsTo: #componentOfType:) ifTrue: [
+        | pos |
+        pos := anObject componentOfType: (Smalltalk at: #NxPosition ifAbsent: [ nil ]).
+        pos ifNotNil: [ ^ pos nodeName ] ].
+    (anObject respondsTo: #location) ifTrue: [ ^ anObject location ].
+    ^ nil
+]
+
+{ #category : 'spatial-index' }
+NxWorld >> updateObjectLocation: anObject from: oldNodeName to: newNodeName [
+    "Move an object between buckets. oldNodeName may be nil."
+    oldNodeName ifNotNil: [
+        (spatialIndex at: oldNodeName ifAbsent: [ ^ self ]) 
+            remove: anObject id ifAbsent: [] ].
+    newNodeName ifNotNil: [
+        (spatialIndex at: newNodeName ifAbsentPut: [ Set new ]) 
+            add: anObject id.
+        objectLocation at: anObject id put: newNodeName ].
+    (oldNodeName = newNodeName) ifTrue: [ ^ self ].
+    oldNodeName ifNotNil: [
+        (spatialIndex at: oldNodeName) ifEmpty: [ spatialIndex removeKey: oldNodeName ] ]
 ]
 
 { #category : 'spatial queries' }

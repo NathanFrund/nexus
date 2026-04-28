@@ -3,7 +3,6 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'witnessSystem',
-		'nodeIndex',
 		'lastMoveTime',
 		'announcer',
 		'steps'
@@ -11,11 +10,6 @@ Class {
 	#category : 'Nexus-ECS',
 	#package : 'Nexus-ECS'
 }
-
-{ #category : 'adding' }
-NxMovementSystem >> addToIndex: anEntity atNode: aNodeName [
-    (nodeIndex at: aNodeName ifAbsentPut: [ OrderedCollection new ]) add: anEntity
-]
 
 { #category : 'as yet unclassified' }
 NxMovementSystem >> buildContextFor: anEntity toNode: targetNodeName inWorld: aWorld [
@@ -25,11 +19,6 @@ NxMovementSystem >> buildContextFor: anEntity toNode: targetNodeName inWorld: aW
         world: aWorld;
         movementSystem: self;
         yourself
-]
-
-{ #category : 'as yet unclassified' }
-NxMovementSystem >> entitiesAtNode: aNodeName [
-    ^ nodeIndex at: aNodeName ifAbsent: [ OrderedCollection new ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -44,11 +33,9 @@ NxMovementSystem >> initialize [
 
 	super initialize.
 	witnessSystem := NxWitnessSystem new.
-	nodeIndex := Dictionary new.
 	announcer := Announcer new.
 	steps := #( 
         #stepValidate: 
-        #stepRemoveFromIndex: 
         #stepDeparture: 
         #stepHazard: 
         #stepSpatialMove: 
@@ -62,11 +49,6 @@ NxMovementSystem >> moveEntity: anEntity toNode: targetNodeName inWorld: aWorld 
     | context |
     context := self buildContextFor: anEntity toNode: targetNodeName inWorld: aWorld.
     ^ self executePipelineOn: context
-]
-
-{ #category : 'removing' }
-NxMovementSystem >> removeFromIndex: anEntity atNode: aNodeName [
-    (nodeIndex at: aNodeName ifAbsent: [ ^ self ]) remove: anEntity ifAbsent: []
 ]
 
 { #category : 'as yet unclassified' }
@@ -101,19 +83,15 @@ NxMovementSystem >> stepHazard: aContext [
 ]
 
 { #category : 'as yet unclassified' }
-NxMovementSystem >> stepRemoveFromIndex: aContext [
-    | current |
-    current := (aContext entity componentOfType: NxPosition) nodeName.
-    self removeFromIndex: aContext entity atNode: current.
-    ^ true
-]
-
-{ #category : 'as yet unclassified' }
 NxMovementSystem >> stepSpatialMove: aContext [
-    | pos |
+    | pos oldNode newNode |
     pos := aContext entity componentOfType: NxPosition.
-    pos nodeName: aContext targetNode.
-    self addToIndex: aContext entity atNode: aContext targetNode.
+    oldNode := pos nodeName.
+    newNode := aContext targetNode.
+    "Update the world's authoritative spatial index"
+    aContext world updateObjectLocation: aContext entity from: oldNode to: newNode.
+    "Update the component's node name"
+    pos nodeName: newNode.
     lastMoveTime := DateAndTime now.
     ^ true
 ]

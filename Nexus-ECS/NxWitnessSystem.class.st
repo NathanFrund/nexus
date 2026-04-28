@@ -11,7 +11,7 @@ Class {
 { #category : 'as yet unclassified' }
 NxWitnessSystem >> arriveEntity: anEntity atNode: aNodeName inWorld: aWorld [
     | others events |
-    others := (aWorld entitiesAtNode: aNodeName) reject: [ :e | e id = anEntity id ].
+    others := (aWorld objectsAtNode: aNodeName) reject: [ :obj | obj id = anEntity id ].
     events := others ifEmpty: [
         { NxArrivalEvent new
             observer: nil;
@@ -34,8 +34,7 @@ NxWitnessSystem >> arriveEntity: anEntity atNode: aNodeName inWorld: aWorld [
 NxWitnessSystem >> departEntity: anEntity fromNode: aNodeName inWorld: aWorld [
 
 	| others events |
-	others := (aWorld entitiesAtNode: aNodeName) reject: [ :e |
-		          e id = anEntity id ].
+	others := (aWorld objectsAtNode: aNodeName) reject: [ :obj | obj id = anEntity id ].
 	events := others
 		          ifEmpty: [
 				          { (NxDepartureEvent new
