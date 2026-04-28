@@ -8,7 +8,7 @@ Class {
 	#package : 'Nexus-ECS'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'witness' }
 NxWitnessSystem >> arriveEntity: anEntity atNode: aNodeName inWorld: aWorld [
     | others events |
     others := (aWorld objectsAtNode: aNodeName) reject: [ :obj | obj id = anEntity id ].
@@ -30,7 +30,7 @@ NxWitnessSystem >> arriveEntity: anEntity atNode: aNodeName inWorld: aWorld [
 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'witness' }
 NxWitnessSystem >> departEntity: anEntity fromNode: aNodeName inWorld: aWorld [
 
 	| others events |
@@ -61,12 +61,12 @@ NxWitnessSystem >> initialize [
     announcer := Announcer new.
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'subscriptions' }
 NxWitnessSystem >> whenArrivalHappensDo: aBlock [
     announcer when: NxArrivalEvent do: aBlock for: self
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'subscriptions' }
 NxWitnessSystem >> whenDepartureHappensDo: aBlock [
     announcer when: NxDepartureEvent do: aBlock for: self
 ]

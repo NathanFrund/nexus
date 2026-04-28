@@ -22,7 +22,7 @@ Class {
 	#package : 'Nexus-Core'
 }
 
-{ #category : 'adding' }
+{ #category : 'management' }
 NxWorld >> addEntity: anObject [
     "Add any object that responds to #id and has a resolvable location."
     objects at: anObject id put: anObject.
@@ -58,7 +58,7 @@ NxWorld >> entities: anEntity [
 	self entities at: anEntity id put: anEntity
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'spatial-index' }
 NxWorld >> entitiesAtNode: aNodeName [
     ^ self entities values select: [ :e |
         (e hasComponent: NxPosition) and: [
@@ -131,7 +131,7 @@ NxWorld >> pendingEvents [
 	^ pendingEvents 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'spatial-index' }
 NxWorld >> registerObjectLocation: anObject [
     "Determine initial location and add to spatial index."
     | location |
@@ -139,7 +139,7 @@ NxWorld >> registerObjectLocation: anObject [
     location ifNotNil: [ self updateObjectLocation: anObject from: nil to: location ].
 ]
 
-{ #category : 'removing' }
+{ #category : 'management' }
 NxWorld >> removeEntity: anObject [
     self removeObjectFromIndex: anObject.
     objects removeKey: anObject id ifAbsent: [].
@@ -156,7 +156,7 @@ NxWorld >> removeObjectFromIndex: anObject [
         (spatialIndex at: nodeName) ifEmpty: [ spatialIndex removeKey: nodeName ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'spatial-index' }
 NxWorld >> resolveLocationOf: anObject [
     "Duck‑typed location: try ECS component first, else simple location accessor."
     (anObject respondsTo: #componentOfType:) ifTrue: [

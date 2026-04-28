@@ -11,7 +11,7 @@ Class {
 	#package : 'Nexus-ECS'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'pipeline' }
 NxMovementSystem >> buildContextFor: anEntity toNode: targetNodeName inWorld: aWorld [
     ^ NxMovementContext new
         entity: anEntity;
@@ -21,7 +21,7 @@ NxMovementSystem >> buildContextFor: anEntity toNode: targetNodeName inWorld: aW
         yourself
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'pipeline' }
 NxMovementSystem >> executePipelineOn: aContext [
     steps do: [ :selector |
         (self perform: selector with: aContext) ifFalse: [ ^ false ] ].
@@ -44,14 +44,14 @@ NxMovementSystem >> initialize [
     )
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'pipeline' }
 NxMovementSystem >> moveEntity: anEntity toNode: targetNodeName inWorld: aWorld [
     | context |
     context := self buildContextFor: anEntity toNode: targetNodeName inWorld: aWorld.
     ^ self executePipelineOn: context
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'steps' }
 NxMovementSystem >> stepAnnounce: aContext [
     announcer announce: (NxEntityMoved new
         entity: aContext entity;
@@ -60,13 +60,13 @@ NxMovementSystem >> stepAnnounce: aContext [
     ^ true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'steps' }
 NxMovementSystem >> stepArrival: aContext [
     witnessSystem arriveEntity: aContext entity atNode: aContext targetNode inWorld: aContext world.
     ^ true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'steps' }
 NxMovementSystem >> stepDeparture: aContext [
     | current |
     current := (aContext entity componentOfType: NxPosition) nodeName.
@@ -74,7 +74,7 @@ NxMovementSystem >> stepDeparture: aContext [
     ^ true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'steps' }
 NxMovementSystem >> stepHazard: aContext [
     | hazard |
     hazard := aContext edge checkHazardTo: aContext targetNode.
@@ -82,7 +82,7 @@ NxMovementSystem >> stepHazard: aContext [
     ^ true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'steps' }
 NxMovementSystem >> stepSpatialMove: aContext [
     | pos oldNode newNode |
     pos := aContext entity componentOfType: NxPosition.
@@ -96,7 +96,7 @@ NxMovementSystem >> stepSpatialMove: aContext [
     ^ true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'steps' }
 NxMovementSystem >> stepValidate: aContext [
     | pos current edge |
     pos := aContext entity componentOfType: NxPosition.

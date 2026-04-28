@@ -1,3 +1,31 @@
+"
+I am a transient data holder (parameter object) that carries state through the movement
+pipeline of `NxMovementSystem`.
+
+During a movement, I hold:
+- The entity that is moving
+- The target node name
+- The world in which the movement occurs
+- A back‑reference to the movement system (for access to its services)
+- The edge being traversed (discovered during validation)
+- An optional `data` dictionary for ad‑hoc information (e.g., custom step parameters)
+
+I am created at the start of `moveEntity:toNode:inWorld:` and passed to each pipeline
+step. Steps can read and write to me, ensuring that all relevant information is
+available without polluting the movement system with temporary instance variables.
+
+I also provide convenient accessors for the common values.
+
+Example usage in a custom step:
+
+    stepLog: aContext
+        | msg |
+        msg := 'Moving ', aContext entity id, ' from ',
+               (aContext entity componentOfType: NxPosition) nodeName,
+               ' to ', aContext targetNode.
+        Transcript show: msg; cr.
+        ^ true
+"
 Class {
 	#name : 'NxMovementContext',
 	#superclass : 'Object',
@@ -19,7 +47,7 @@ NxMovementContext >> data: anObject [
 	data := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : 'data dictionary' }
 NxMovementContext >> dataAt: key [
     ^ data at: key ifAbsent: [ nil ]
 ]
@@ -60,7 +88,7 @@ NxMovementContext >> movementSystem: anObject [
 	movementSystem := anObject
 ]
 
-{ #category : 'initialization' }
+{ #category : 'data dictionary' }
 NxMovementContext >> setData: key to: value [
     data at: key put: value
 ]
