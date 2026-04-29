@@ -1,12 +1,12 @@
 Class {
-	#name : 'NxSimpleRiskStrategy',
+	#name : 'NxDefaultRiskStrategy',
 	#superclass : 'NxHazardStrategy',
 	#category : 'Nexus-Core',
 	#package : 'Nexus-Core'
 }
 
 { #category : 'evaluating' }
-NxSimpleRiskStrategy >> evaluateFor: anEntity onEdge: anEdge [
+NxDefaultRiskStrategy >> evaluateFor: anEntity onEdge: anEdge [
     | risk |
     risk := anEdge risk ifNil: [ 0.0 ].
     risk <= 0.0 ifTrue: [ ^ NxHazardResult none ].

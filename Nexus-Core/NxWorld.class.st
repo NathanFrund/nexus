@@ -24,8 +24,8 @@ Class {
 
 { #category : 'management' }
 NxWorld >> addEntity: anObject [
-    "Add any object that responds to #id and has a resolvable location."
     objects at: anObject id put: anObject.
+    self entities at: anObject id put: anObject.   "keep legacy dict in sync"
     self registerObjectLocation: anObject.
 ]
 
@@ -119,6 +119,11 @@ NxWorld >> moveAgent: anAgent toNode: targetNodeName [
     ^ true
 ]
 
+{ #category : 'accessing' }
+NxWorld >> objects [
+	^ objects 
+]
+
 { #category : 'spatial-index' }
 NxWorld >> objectsAtNode: aNodeName [
     "Return a collection of actual objects at the given node (copy to avoid mutation)."
@@ -143,6 +148,7 @@ NxWorld >> registerObjectLocation: anObject [
 NxWorld >> removeEntity: anObject [
     self removeObjectFromIndex: anObject.
     objects removeKey: anObject id ifAbsent: [].
+    entities removeKey: anObject id ifAbsent: [].
 ]
 
 { #category : 'spatial-index' }

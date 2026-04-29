@@ -18,7 +18,7 @@ NxMovementSystem >> buildContextFor: anEntity toNode: targetNodeName inWorld: aW
         targetNode: targetNodeName;
         world: aWorld;
         movementSystem: self;
-        hazardStrategy: NxSimpleRiskStrategy new;
+        hazardStrategy: NxDefaultRiskStrategy new;
         yourself
 ]
 

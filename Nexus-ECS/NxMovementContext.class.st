@@ -80,7 +80,7 @@ NxMovementContext >> entity: anObject [
 { #category : 'accessing' }
 NxMovementContext >> hazardStrategy [
     "Return the hazard strategy, defaulting to NxSimpleRiskStrategy if not set."
-    ^ hazardStrategy ifNil: [ hazardStrategy := NxSimpleRiskStrategy new ]
+    ^ hazardStrategy ifNil: [ hazardStrategy := NxDefaultRiskStrategy new ]
 ]
 
 { #category : 'accessing' }
