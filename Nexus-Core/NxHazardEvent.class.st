@@ -10,11 +10,25 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'target',
-		'risk'
+		'risk',
+		'severity',
+		'description'
 	],
 	#category : 'Nexus-Core',
 	#package : 'Nexus-Core'
 }
+
+{ #category : 'accessing' }
+NxHazardEvent >> description [
+
+	^ description
+]
+
+{ #category : 'accessing' }
+NxHazardEvent >> description: anObject [
+
+	description := anObject
+]
 
 { #category : 'accessing' }
 NxHazardEvent >> risk [
@@ -26,6 +40,18 @@ NxHazardEvent >> risk [
 NxHazardEvent >> risk: aNumber [
 
 	risk := aNumber
+]
+
+{ #category : 'accessing' }
+NxHazardEvent >> severity [
+
+	^ severity
+]
+
+{ #category : 'accessing' }
+NxHazardEvent >> severity: anObject [
+
+	severity := anObject
 ]
 
 { #category : 'accessing' }

@@ -18,6 +18,7 @@ NxMovementSystem >> buildContextFor: anEntity toNode: targetNodeName inWorld: aW
         targetNode: targetNodeName;
         world: aWorld;
         movementSystem: self;
+        hazardStrategy: NxSimpleRiskStrategy new;
         yourself
 ]
 
@@ -76,9 +77,16 @@ NxMovementSystem >> stepDeparture: aContext [
 
 { #category : 'steps' }
 NxMovementSystem >> stepHazard: aContext [
-    | hazard |
-    hazard := aContext edge checkHazardTo: aContext targetNode.
-    hazard ifNotNil: [ aContext world pendingEvents add: hazard ].
+    | strategy result |
+    strategy := aContext hazardStrategy.
+    result := strategy evaluateFor: aContext entity onEdge: aContext edge.
+    result occurred ifTrue: [
+        aContext world pendingEvents add: (
+            NxHazardEvent new
+                target: aContext targetNode;
+                severity: result severity;
+                description: result description;
+                yourself) ].
     ^ true
 ]
 

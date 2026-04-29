@@ -1,0 +1,16 @@
+Class {
+	#name : 'NxSimpleRiskStrategy',
+	#superclass : 'NxHazardStrategy',
+	#category : 'Nexus-Core',
+	#package : 'Nexus-Core'
+}
+
+{ #category : 'evaluating' }
+NxSimpleRiskStrategy >> evaluateFor: anEntity onEdge: anEdge [
+    | risk |
+    risk := anEdge risk ifNil: [ 0.0 ].
+    risk <= 0.0 ifTrue: [ ^ NxHazardResult none ].
+    (Random new next <= risk) ifTrue: [
+        ^ NxHazardResult withSeverity: risk description: 'Travel hazard encountered' ].
+    ^ NxHazardResult none
+]

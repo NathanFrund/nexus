@@ -35,6 +35,7 @@ Class {
 		'world',
 		'movementSystem',
 		'edge',
+		'hazardStrategy',
 		'data'
 	],
 	#category : 'Nexus-ECS',
@@ -77,15 +78,25 @@ NxMovementContext >> entity: anObject [
 ]
 
 { #category : 'accessing' }
-NxMovementContext >> movementSystem [
+NxMovementContext >> hazardStrategy [
+    "Return the hazard strategy, defaulting to NxSimpleRiskStrategy if not set."
+    ^ hazardStrategy ifNil: [ hazardStrategy := NxSimpleRiskStrategy new ]
+]
 
-	^ movementSystem
+{ #category : 'accessing' }
+NxMovementContext >> hazardStrategy: aStrategy [
+    hazardStrategy := aStrategy
+]
+
+{ #category : 'accessing' }
+NxMovementContext >> movementSystem [
+    ^ movementSystem
+
 ]
 
 { #category : 'accessing' }
 NxMovementContext >> movementSystem: anObject [
-
-	movementSystem := anObject
+    movementSystem := anObject
 ]
 
 { #category : 'data dictionary' }

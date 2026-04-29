@@ -158,7 +158,7 @@ NxECSWorldTest >> testHazardOccurs [
     hazardEvent := world pendingEvents detect: [ :e | e isKindOf: NxHazardEvent ] ifNone: [ nil ].
     self deny: hazardEvent isNil.
     self assert: hazardEvent target equals: 'hut'.
-    self assert: hazardEvent risk equals: 1.0.
+    self assert: hazardEvent severity equals: 1.0.
 ]
 
 { #category : 'tests' }
