@@ -14,8 +14,8 @@ Class {
 NxWorldTest >> setUp [
     | graph |
     graph := NxGraph new.
-    graph addNode: (NxNode new name: 'market'; label: 'Market'; terrain: #open).
-    graph addNode: (NxNode new name: 'tavern'; label: 'Tavern'; terrain: #building).
+    graph addNode: (NxNode new name: 'market'; label: 'Market').
+    graph addNode: (NxNode new name: 'tavern'; label: 'Tavern').
     graph addEdgeFrom: 'market' to: 'tavern' distance: 1 risk: 0.0.
 
     elder := NxSimpleAgent new name: 'Elder'; location: 'tavern'; yourself.

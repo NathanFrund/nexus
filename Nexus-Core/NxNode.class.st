@@ -10,7 +10,6 @@ Class {
 	#instVars : [
 		'name',
 		'label',
-		'terrain',
 		'properties'
 	],
 	#category : 'Nexus-Core',
@@ -75,16 +74,4 @@ NxNode >> removeProperty: key [
 { #category : 'property-graph' }
 NxNode >> setProperty: key to: value [
     self properties at: key put: value
-]
-
-{ #category : 'accessing' }
-NxNode >> terrain [
-
-	^ terrain
-]
-
-{ #category : 'accessing' }
-NxNode >> terrain: anObject [
-
-	terrain := anObject
 ]

@@ -11,8 +11,8 @@ Class {
 { #category : 'running' }
 NxGraphTest >> setUp [
     graph := NxGraph new.
-    graph addNode: (NxNode new name: 'village'; label: 'Village Square'; terrain: #open).
-    graph addNode: (NxNode new name: 'hut'; label: 'Elders Hut'; terrain: #building).
+    graph addNode: (NxNode new name: 'village'; label: 'Village Square').
+    graph addNode: (NxNode new name: 'hut'; label: 'Elders Hut').
     graph addEdgeFrom: 'village' to: 'hut' distance: 1 risk: 0.1.
     "One-way edge: from 'village' to 'cliff' only forward"
     graph addNode: (NxNode new name: 'cliff'; label: 'Cliff Bottom').

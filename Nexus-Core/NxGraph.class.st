@@ -25,8 +25,7 @@ NxGraph class >> fromJSON: aDictionary [
     (aDictionary at: 'nodes') keysAndValuesDo: [ :nodeId :props |
         graph addNode: (NxNode new
             name: nodeId asString;
-            label: (props at: 'label' ifAbsent: [ nodeId asString ]);
-            terrain: (props at: 'terrain' ifAbsent: [ #unknown ]) asSymbol) ].
+            label: (props at: 'label' ifAbsent: [ nodeId asString ])) ].
 
     "Edges (with optional direction)"
     (aDictionary at: 'edges') do: [ :edgeSpec |
@@ -51,56 +50,55 @@ NxGraph class >> fromJSONFile: aFileReference [
 
 { #category : 'as yet unclassified' }
 NxGraph class >> loadWorldFromJSONFile: aFileReference [
-    "Load a hypergraph world from a JSON file containing multiple named graphs.
+	"Load a hypergraph world from a JSON file containing multiple named graphs.
      Flattens all nodes and edges into a single NxGraph.
      Edges are expected to be maps with 'from' and 'to' keys (as in the Clojure version)."
 
-    | config graph |
-    config := STONJSON fromString: aFileReference contents.
-    graph := self new.
+	| config graph |
+	config := STONJSON fromString: aFileReference contents.
+	graph := self new.
 
-    (config at: 'graphs') keysAndValuesDo: [ :regionName :graphDict |
-        "Nodes"
-        (graphDict at: 'nodes') keysAndValuesDo: [ :nodeId :props |
-            (graph nodeNames includes: nodeId asSymbol) ifFalse: [
-                graph addNode: (NxNode new
-                    name: nodeId asString;
-                    label: (props at: 'label' ifAbsent: [ nodeId asString ]);
-                    terrain: ((props at: 'terrain' ifAbsent: [ 'unknown' ]) asSymbol);
-                    yourself) ] ].
+	(config at: 'graphs') keysAndValuesDo: [ :regionName :graphDict | "Nodes"
+			(graphDict at: 'nodes') keysAndValuesDo: [ :nodeId :props |
+					(graph nodeNames includes: nodeId asSymbol) ifFalse: [
+							graph addNode: (NxNode new
+									 name: nodeId asString;
+									 label: (props at: 'label' ifAbsent: [ nodeId asString ])) ] ].
 
-        "Edges (now maps with 'from', 'to', etc.)"
-        (graphDict at: 'edges') do: [ :edgeDict |
-            graph
-                addEdgeFrom: (edgeDict at: 'from')
-                to: (edgeDict at: 'to')
-                distance: (edgeDict at: 'distance' ifAbsent: [ 1 ])
-                risk: (edgeDict at: 'risk' ifAbsent: [ 0.0 ])
-                direction: ((edgeDict at: 'direction' ifAbsent: [ 'both' ]) asSymbol) ] ].
+			"Edges (now maps with 'from', 'to', etc.)"
+			(graphDict at: 'edges') do: [ :edgeDict |
+					graph
+						addEdgeFrom: (edgeDict at: 'from')
+						to: (edgeDict at: 'to')
+						distance: (edgeDict at: 'distance' ifAbsent: [ 1 ])
+						risk: (edgeDict at: 'risk' ifAbsent: [ 0.0 ])
+						direction:
+						(edgeDict at: 'direction' ifAbsent: [ 'both' ]) asSymbol ] ].
 
-    ^ graph
+	^ graph
 ]
 
 { #category : 'as yet unclassified' }
 NxGraph class >> loadWorldFromJSONString: aString [
-    | config graph |
-    config := STONJSON fromString: aString.
-    graph := self new.
-    (config at: 'graphs') keysAndValuesDo: [ :regionName :graphDict |
-        (graphDict at: 'nodes') keysAndValuesDo: [ :nodeId :props |
-            (graph nodeNames includes: nodeId asSymbol) ifFalse: [
-                graph addNode: (NxNode new
-                    name: nodeId asString;
-                    label: (props at: 'label' ifAbsent: [ nodeId asString ]);
-                    terrain: ((props at: 'terrain' ifAbsent: [ 'unknown' ]) asSymbol);
-                    yourself) ] ].
-        (graphDict at: 'edges') do: [ :edgeDict |
-            graph addEdgeFrom: (edgeDict at: 'from')
-                  to: (edgeDict at: 'to')
-                  distance: (edgeDict at: 'distance' ifAbsent: [ 1 ])
-                  risk: (edgeDict at: 'risk' ifAbsent: [ 0.0 ])
-                  direction: ((edgeDict at: 'direction' ifAbsent: [ 'both' ]) asSymbol) ] ].
-    ^ graph
+
+	| config graph |
+	config := STONJSON fromString: aString.
+	graph := self new.
+	(config at: 'graphs') keysAndValuesDo: [ :regionName :graphDict |
+			(graphDict at: 'nodes') keysAndValuesDo: [ :nodeId :props |
+					(graph nodeNames includes: nodeId asSymbol) ifFalse: [
+							graph addNode: (NxNode new
+									 name: nodeId asString;
+									 label: (props at: 'label' ifAbsent: [ nodeId asString ])) ] ].
+			(graphDict at: 'edges') do: [ :edgeDict |
+					graph
+						addEdgeFrom: (edgeDict at: 'from')
+						to: (edgeDict at: 'to')
+						distance: (edgeDict at: 'distance' ifAbsent: [ 1 ])
+						risk: (edgeDict at: 'risk' ifAbsent: [ 0.0 ])
+						direction:
+						(edgeDict at: 'direction' ifAbsent: [ 'both' ]) asSymbol ] ].
+	^ graph
 ]
 
 { #category : 'adding' }
