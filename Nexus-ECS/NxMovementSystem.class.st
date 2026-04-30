@@ -58,6 +58,7 @@ NxMovementSystem >> stepAnnounce: aContext [
         entity: aContext entity;
         targetNode: aContext targetNode;
         yourself).
+    (aContext registry hooksFor: #announce) runWith: aContext.
     ^ true
 ]
 
@@ -89,11 +90,10 @@ NxMovementSystem >> stepSpatialMove: aContext [
     pos := aContext entity componentOfType: NxPosition.
     oldNode := pos nodeName.
     newNode := aContext targetNode.
-    "Update the world's authoritative spatial index"
     aContext world updateObjectLocation: aContext entity from: oldNode to: newNode.
-    "Update the component's node name"
     pos nodeName: newNode.
     lastMoveTime := DateAndTime now.
+    (aContext registry hooksFor: #spatialMove) runWith: aContext.
     ^ true
 ]
 
