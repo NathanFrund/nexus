@@ -10,7 +10,7 @@ roleplaying games, and interactive narratives. Written in Pharo Smalltalk, it mo
 - **Graph‑first** — The world is a graph. Every location is a node; every path is an edge.
 - **Data‑driven** — Nodes and edges carry arbitrary metadata (a property graph). Plugins read that metadata to make decisions.
 - **Hook‑based extensibility** — Six named hooks cover every phase of movement. Game logic lives in plugins; the engine never changes.
-- **Two approaches** — An ECS‑free path for lightweight agents, and a full Entity‑Component‑System pipeline for complex simulations.
+- **Two approaches** — An simple path for lightweight agents, and a full Entity‑Component‑System pipeline for complex simulations.
 - **Library, not a framework** — Nexus provides a world, movement, and hooks. You bring the agents, components, and rules.
 - **Property‑graph native** — Every node and edge can be serialized to a portable dictionary, ready for JSON or graph databases (XTDB, SurrealDB, etc.).
 
