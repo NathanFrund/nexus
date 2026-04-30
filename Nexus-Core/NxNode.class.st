@@ -17,13 +17,13 @@ Class {
 	#package : 'Nexus-Core'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'property-graph' }
 NxNode >> allProperties [
     ^ self properties copy
 
 ]
 
-{ #category : 'testing' }
+{ #category : 'property-graph' }
 NxNode >> hasProperty: key [
     ^ self properties includesKey: key
 ]
@@ -52,27 +52,27 @@ NxNode >> name: aString [
 	name := aString
 ]
 
-{ #category : 'accessing' }
+{ #category : 'property-graph' }
 NxNode >> properties [
     ^ properties ifNil: [ properties := Dictionary new ]
 ]
 
-{ #category : 'accessing' }
+{ #category : 'property-graph' }
 NxNode >> propertyAt: key [
     ^ self propertyAt: key ifAbsent: [ nil ]
 ]
 
-{ #category : 'accessing' }
+{ #category : 'property-graph' }
 NxNode >> propertyAt: key ifAbsent: aBlock [
     ^ self properties at: key ifAbsent: aBlock
 ]
 
-{ #category : 'removing' }
+{ #category : 'property-graph' }
 NxNode >> removeProperty: key [
     self properties removeKey: key ifAbsent: []
 ]
 
-{ #category : 'initialization' }
+{ #category : 'property-graph' }
 NxNode >> setProperty: key to: value [
     self properties at: key put: value
 ]

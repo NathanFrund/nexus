@@ -21,12 +21,12 @@ Class {
 	#package : 'Nexus-Core'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'property-graph' }
 NxEdge >> allProperties [
     ^ self properties copy
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'traversing' }
 NxEdge >> allowsTraversalFrom: aNodeName [
     ^ (self direction = #both) or: [
         (self direction = #forward   and: [ self node1 = aNodeName ]) or:
@@ -88,7 +88,7 @@ NxEdge >> encounters: aCollection [
 	encounters := aCollection
 ]
 
-{ #category : 'testing' }
+{ #category : 'property-graph' }
 NxEdge >> hasProperty: key [
     ^ self properties includesKey: key
 ]
@@ -126,22 +126,22 @@ NxEdge >> otherEndOf: aNodeName [
 	^ node1
 ]
 
-{ #category : 'accessing' }
+{ #category : 'property-graph' }
 NxEdge >> properties [
     ^ properties ifNil: [ properties := Dictionary new ]
 ]
 
-{ #category : 'accessing' }
+{ #category : 'property-graph' }
 NxEdge >> propertyAt: key [
     ^ self propertyAt: key ifAbsent: [ nil ]
 ]
 
-{ #category : 'accessing' }
+{ #category : 'property-graph' }
 NxEdge >> propertyAt: key ifAbsent: aBlock [
     ^ self properties at: key ifAbsent: aBlock
 ]
 
-{ #category : 'removing' }
+{ #category : 'property-graph' }
 NxEdge >> removeProperty: key [
     self properties removeKey: key ifAbsent: []
 ]
@@ -158,7 +158,7 @@ NxEdge >> risk: aNumber [
 	risk := aNumber
 ]
 
-{ #category : 'initialization' }
+{ #category : 'property-graph' }
 NxEdge >> setProperty: key to: value [
     self properties at: key put: value
 ]
