@@ -54,6 +54,12 @@ NxMovementContext >> dataAt: key [
 ]
 
 { #category : 'accessing' }
+NxMovementContext >> dataAt: key ifAbsent: aBlock [
+    data ifNil: [ data := Dictionary new ].
+    ^ data at: key ifAbsent: aBlock
+]
+
+{ #category : 'accessing' }
 NxMovementContext >> edge [
 
 	^ edge
@@ -88,6 +94,18 @@ NxMovementContext >> hazardStrategy: aStrategy [
     hazardStrategy := aStrategy
 ]
 
+{ #category : 'as yet unclassified' }
+NxMovementContext >> moveAllowed [
+    ^ self dataAt: #moveAllowed ifAbsent: [ true ]
+]
+
+{ #category : 'as yet unclassified' }
+NxMovementContext >> moveAllowed: aBoolean [
+    | current |
+    current := self moveAllowed.
+    self setData: #moveAllowed to: (current and: [ aBoolean ])
+]
+
 { #category : 'accessing' }
 NxMovementContext >> movementSystem [
     ^ movementSystem
@@ -99,8 +117,19 @@ NxMovementContext >> movementSystem: anObject [
     movementSystem := anObject
 ]
 
+{ #category : 'registry' }
+NxMovementContext >> registry [
+    ^ self dataAt: #registry ifAbsent: [ NxPluginRegistry default ]
+]
+
+{ #category : 'accessing' }
+NxMovementContext >> registry: aRegistry [
+    self setData: #registry to: aRegistry
+]
+
 { #category : 'data dictionary' }
 NxMovementContext >> setData: key to: value [
+    data ifNil: [ data := Dictionary new ].
     data at: key put: value
 ]
 

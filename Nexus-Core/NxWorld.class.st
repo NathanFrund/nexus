@@ -87,6 +87,14 @@ NxWorld >> initialize [
 	spatialIndex := Dictionary new "nodeName -> Set of ids"
 ]
 
+{ #category : 'public' }
+NxWorld >> move: entityId to: targetNodeName [
+    | entity system |
+    entity := self entities at: entityId ifAbsent: [ self error: 'Unknown entity: ', entityId ].
+    system := NxMovementSystem new.
+    ^ system moveEntity: entity toNode: targetNodeName inWorld: self
+]
+
 { #category : 'movement' }
 NxWorld >> moveAgent: anAgent toNode: targetNodeName [
     | currentLocation edge observers hazard events |
@@ -171,6 +179,18 @@ NxWorld >> resolveLocationOf: anObject [
         pos ifNotNil: [ ^ pos nodeName ] ].
     (anObject respondsTo: #location) ifTrue: [ ^ anObject location ].
     ^ nil
+]
+
+{ #category : 'as yet unclassified' }
+NxWorld >> spawn: entityId at: aNodeName [
+    | entity |
+    entity := NxEntity new id: entityId asSymbol.
+    entity addComponent: (NxIdentity new id: entityId; name: entityId asString).
+    entity addComponent: (NxPosition new 
+        nodeName: aNodeName; 
+        graph: self graph).   "critical: inject the graph"
+    self addEntity: entity.
+    ^ entity
 ]
 
 { #category : 'spatial-index' }

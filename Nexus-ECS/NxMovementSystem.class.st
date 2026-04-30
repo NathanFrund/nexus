@@ -64,6 +64,7 @@ NxMovementSystem >> stepAnnounce: aContext [
 { #category : 'steps' }
 NxMovementSystem >> stepArrival: aContext [
     witnessSystem arriveEntity: aContext entity atNode: aContext targetNode inWorld: aContext world.
+    (aContext registry hooksFor: #arrival) runWith: aContext.
     ^ true
 ]
 
@@ -71,22 +72,14 @@ NxMovementSystem >> stepArrival: aContext [
 NxMovementSystem >> stepDeparture: aContext [
     | current |
     current := (aContext entity componentOfType: NxPosition) nodeName.
+    (aContext registry hooksFor: #departure) runWith: aContext.
     witnessSystem departEntity: aContext entity fromNode: current inWorld: aContext world.
     ^ true
 ]
 
 { #category : 'steps' }
 NxMovementSystem >> stepHazard: aContext [
-    | strategy result |
-    strategy := aContext hazardStrategy.
-    result := strategy evaluateFor: aContext entity onEdge: aContext edge.
-    result occurred ifTrue: [
-        aContext world pendingEvents add: (
-            NxHazardEvent new
-                target: aContext targetNode;
-                severity: result severity;
-                description: result description;
-                yourself) ].
+    (aContext registry hooksFor: #hazard) runWith: aContext.
     ^ true
 ]
 
@@ -116,7 +109,11 @@ NxMovementSystem >> stepValidate: aContext [
     edge ifNil: [ ^ false ].
     (edge allowsTraversalFrom: current) ifFalse: [ ^ false ].
     aContext edge: edge.
-    ^ true
+    
+    "Allow hooks to veto the move"
+    aContext moveAllowed: true.   "reset (fresh context, but harmless)"
+    (aContext registry hooksFor: #validate) runWith: aContext.
+    ^ aContext moveAllowed
 ]
 
 { #category : 'enumerating' }
