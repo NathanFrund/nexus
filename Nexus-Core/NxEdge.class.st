@@ -20,6 +20,22 @@ Class {
 	#package : 'Nexus-Core'
 }
 
+{ #category : 'instance creation' }
+NxEdge class >> fromPropertyDictionary: dict [
+    | edge |
+    edge := self new
+        node1: (dict at: '~from');
+        node2: (dict at: '~to');
+        distance: (dict at: '~distance' ifAbsent: [ 1 ]);
+        risk: (dict at: '~risk' ifAbsent: [ 0.0 ]);
+        direction: (dict at: '~direction' ifAbsent: [ #both ]);
+        yourself.
+    dict keysAndValuesDo: [ :key :value |
+        (key asString beginsWith: '~') ifFalse: [
+            edge setProperty: key to: value ] ].
+    ^ edge
+]
+
 { #category : 'property-graph' }
 NxEdge >> allProperties [
     ^ self properties copy
@@ -30,6 +46,18 @@ NxEdge >> allowsTraversalFrom: aNodeName [
     ^ (self direction = #both) or: [
         (self direction = #forward   and: [ self node1 = aNodeName ]) or:
         [ self direction = #backward and: [ self node2 = aNodeName ] ] ]
+]
+
+{ #category : 'property-graph' }
+NxEdge >> asPropertyDictionary [
+    | dict |
+    dict := self properties copy.
+    dict at: '~from' put: node1;
+         at: '~to' put: node2;
+         at: '~distance' put: (distance ifNil: [ 1 ]);
+         at: '~risk' put: (risk ifNil: [ 0.0 ]);
+         at: '~direction' put: (direction ifNil: [ #both ]).
+    ^ dict
 ]
 
 { #category : 'movement' }
@@ -147,5 +175,7 @@ NxEdge >> risk: aNumber [
 
 { #category : 'property-graph' }
 NxEdge >> setProperty: key to: value [
+    (key asString beginsWith: '~') ifTrue: [
+        self error: 'Property key must not begin with ~' ].
     self properties at: key put: value
 ]

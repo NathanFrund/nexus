@@ -16,10 +16,32 @@ Class {
 	#package : 'Nexus-Core'
 }
 
+{ #category : 'instance creation' }
+NxNode class >> fromPropertyDictionary: dict [
+    | node |
+    node := self new
+        name: (dict at: '~id');
+        label: (dict at: '~label' ifAbsent: [ dict at: '~id' ]);
+        yourself.
+    dict keysAndValuesDo: [ :key :value |
+        (key asString beginsWith: '~') ifFalse: [
+            node setProperty: key to: value ] ].
+    ^ node
+]
+
 { #category : 'property-graph' }
 NxNode >> allProperties [
     ^ self properties copy
 
+]
+
+{ #category : 'converting' }
+NxNode >> asPropertyDictionary [
+    | dict |
+    dict := self properties copy.
+    dict at: '~id' put: name;
+         at: '~label' put: (label ifNil: [ name ]).
+    ^ dict
 ]
 
 { #category : 'property-graph' }
@@ -73,5 +95,7 @@ NxNode >> removeProperty: key [
 
 { #category : 'property-graph' }
 NxNode >> setProperty: key to: value [
+    (key asString beginsWith: '~') ifTrue: [
+        self error: 'Property key must not begin with ~' ].
     self properties at: key put: value
 ]
