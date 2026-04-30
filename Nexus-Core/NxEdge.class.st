@@ -14,11 +14,17 @@ Class {
 		'distance',
 		'risk',
 		'encounters',
-		'direction'
+		'direction',
+		'properties'
 	],
 	#category : 'Nexus-Core',
 	#package : 'Nexus-Core'
 }
+
+{ #category : 'as yet unclassified' }
+NxEdge >> allProperties [
+    ^ self properties copy
+]
 
 { #category : 'as yet unclassified' }
 NxEdge >> allowsTraversalFrom: aNodeName [
@@ -82,6 +88,11 @@ NxEdge >> encounters: aCollection [
 	encounters := aCollection
 ]
 
+{ #category : 'testing' }
+NxEdge >> hasProperty: key [
+    ^ self properties includesKey: key
+]
+
 { #category : 'accessing' }
 NxEdge >> node1 [
 
@@ -116,6 +127,26 @@ NxEdge >> otherEndOf: aNodeName [
 ]
 
 { #category : 'accessing' }
+NxEdge >> properties [
+    ^ properties ifNil: [ properties := Dictionary new ]
+]
+
+{ #category : 'accessing' }
+NxEdge >> propertyAt: key [
+    ^ self propertyAt: key ifAbsent: [ nil ]
+]
+
+{ #category : 'accessing' }
+NxEdge >> propertyAt: key ifAbsent: aBlock [
+    ^ self properties at: key ifAbsent: aBlock
+]
+
+{ #category : 'removing' }
+NxEdge >> removeProperty: key [
+    self properties removeKey: key ifAbsent: []
+]
+
+{ #category : 'accessing' }
 NxEdge >> risk [
 
 	^ risk ifNil: [ 0.0 ]
@@ -125,4 +156,9 @@ NxEdge >> risk [
 NxEdge >> risk: aNumber [
 
 	risk := aNumber
+]
+
+{ #category : 'initialization' }
+NxEdge >> setProperty: key to: value [
+    self properties at: key put: value
 ]
