@@ -97,33 +97,40 @@ NxWorld >> move: entityId to: targetNodeName [
 
 { #category : 'movement' }
 NxWorld >> moveAgent: anAgent toNode: targetNodeName [
-    | currentLocation edge observers hazard events |
+    | currentLocation edge ctx observers |
     currentLocation := anAgent location.
     edge := (self graph edgesFrom: currentLocation)
                 detect: [ :e | (e otherEndOf: currentLocation) = targetNodeName ]
                 ifNone: [ nil ].
-    edge ifNil: [ ^ false ].
-    
-    "Check directionality"
-    (edge direction = #both or: [
-        (edge direction = #forward   and: [ edge node1 = currentLocation ]) or:
-        [ edge direction = #backward and: [ edge node2 = currentLocation ]]
-    ]) ifFalse: [ ^ false ].
-    
-    "Capture departure witnesses before moving"
+    (edge notNil and: [ edge allowsTraversalFrom: currentLocation ]) ifFalse: [ ^ false ].
+
+    "Build a lightweight context for the simple‑agent path"
+    ctx := NxMovementContext new
+        entity: anAgent;
+        targetNode: targetNodeName;
+        edge: edge;
+        world: self;
+        yourself.
+
+    "Validation hook (can block movement)"
+    (ctx registry hooksFor: #validate) runWith: ctx.
+    ctx moveAllowed ifFalse: [ ^ false ].
+
+    "Departure witnessed events (legacy behaviour)"
     observers := self witnessedEventsFor: #agentDeparted atNode: currentLocation source: anAgent.
-    
-    "Check for travel hazard"
-    hazard := edge checkHazardTo: targetNodeName.
-    
-    "Collect events into pendingEvents"
-    events := OrderedCollection new.
-    events addAll: observers.
-    hazard ifNotNil: [ events add: hazard ].
-    pendingEvents removeAll; addAll: events.
-    
-    "Move the agent"
+    self pendingEvents removeAll.
+    self pendingEvents addAll: observers.
+    (ctx registry hooksFor: #departure) runWith: ctx.
+
+    "Hazard hook (no default logic)"
+    (ctx registry hooksFor: #hazard) runWith: ctx.
+
+    "Perform the move"
     anAgent location: targetNodeName.
+
+    "Arrival hook (no default arrival witnessed events)"
+    (ctx registry hooksFor: #arrival) runWith: ctx.
+
     ^ true
 ]
 

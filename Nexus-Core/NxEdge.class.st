@@ -60,16 +60,6 @@ NxEdge >> asPropertyDictionary [
     ^ dict
 ]
 
-{ #category : 'movement' }
-NxEdge >> checkHazardTo: targetNodeName [
-	"Deprecated. Use hazard strategies instead."
-    self risk <= 0.0 ifTrue: [ ^ nil ].
-    (Random new next <= self risk) ifTrue: [
-        Transcript show: 'Hazard! ', targetNodeName; cr.
-        ^ NxHazardEvent new target: targetNodeName; risk: self risk; yourself ].
-    ^ nil
-]
-
 { #category : 'testing' }
 NxEdge >> connectsNode: aNodeName [
 	"Does this edge connect to aNodeName?"
