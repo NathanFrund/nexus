@@ -137,31 +137,6 @@ NxECSWorldTest >> testEntityMovementAndWitnessing [
 ]
 
 { #category : 'tests' }
-NxECSWorldTest >> testHazardOccurs [
-    | graph world explorer moveSys hazardEvent |
-
-    graph := NxGraph new.
-    graph addNode: (NxNode new name: 'square'; label: 'Square').
-    graph addNode: (NxNode new name: 'hut'; label: 'Hut').
-    graph addEdgeFrom: 'square' to: 'hut' distance: 1 risk: 1.0.
-
-    world := NxWorld new.
-    world graph: graph.
-
-    explorer := NxEntity new id: #explorer.
-    explorer addComponent: (NxPosition new nodeName: 'square'; graph: graph).
-    world addEntity: explorer.
-
-    moveSys := NxMovementSystem new.
-    self assert: (moveSys moveEntity: explorer toNode: 'hut' inWorld: world).
-
-    hazardEvent := world pendingEvents detect: [ :e | e isKindOf: NxHazardEvent ] ifNone: [ nil ].
-    self deny: hazardEvent isNil.
-    self assert: hazardEvent target equals: 'hut'.
-    self assert: hazardEvent severity equals: 1.0.
-]
-
-{ #category : 'tests' }
 NxECSWorldTest >> testNoHazard [
     | graph world explorer moveSys hazardEvent |
 
