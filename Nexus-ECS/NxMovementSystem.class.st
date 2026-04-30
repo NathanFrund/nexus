@@ -3,7 +3,6 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'witnessSystem',
-		'lastMoveTime',
 		'announcer',
 		'steps'
 	],
@@ -92,7 +91,6 @@ NxMovementSystem >> stepSpatialMove: aContext [
     newNode := aContext targetNode.
     aContext world updateObjectLocation: aContext entity from: oldNode to: newNode.
     pos nodeName: newNode.
-    lastMoveTime := DateAndTime now.
     (aContext registry hooksFor: #spatialMove) runWith: aContext.
     ^ true
 ]

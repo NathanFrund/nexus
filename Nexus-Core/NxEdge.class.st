@@ -13,7 +13,6 @@ Class {
 		'node2',
 		'distance',
 		'risk',
-		'encounters',
 		'direction',
 		'properties'
 	],
@@ -74,18 +73,6 @@ NxEdge >> distance [
 NxEdge >> distance: aNumber [
 
 	distance := aNumber
-]
-
-{ #category : 'accessing' }
-NxEdge >> encounters [
-
-	^ encounters ifNotNil: [ #() ]
-]
-
-{ #category : 'accessing' }
-NxEdge >> encounters: aCollection [
-
-	encounters := aCollection
 ]
 
 { #category : 'property-graph' }
